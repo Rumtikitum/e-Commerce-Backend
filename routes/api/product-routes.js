@@ -37,6 +37,10 @@ router.get('/:id',async(req, res) => {
         attributes:['tag_name'],
       }],
     });
+    if (!productData) {
+      res.status(404).json({message: 'No product here!'});
+      return;
+    }
     res.status(200).json(productData);
   } catch (err) {
     res.status(500).json(err);
