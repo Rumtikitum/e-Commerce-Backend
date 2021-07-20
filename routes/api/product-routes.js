@@ -61,13 +61,13 @@ router.post('/', (req, res) => {
     .then((product) => {
       // if there's product tags, we need to create pairings to bulk create in the ProductTag model
       if (req.body.tagIds.length) {
-        const productTagIdArr = req.body.tagIds.map((tag_id) => {
+        const productTagsArr = req.body.tagIds.map((tag_id) => {
           return {
             product_id: product.id,
             tag_id,
           };
         });
-        return ProductTag.bulkCreate(productTagIdArr);
+        return ProductTag.bulkCreate(productTagsArr);
       }
       // if no product tags, just respond
       res.status(200).json(product);
@@ -107,14 +107,14 @@ router.put('/:id', (req, res) => {
           };
         });
       // figure out which ones to remove
-      const productTagsToRemove = productTags
+      const productTagsUpdate = productTags
         .filter(({ tag_id }) => !req.body.tagIds.includes(tag_id))
         .map(({ id }) => id);
 
       // run both actions
       return Promise.all([
         ProductTag.destroy({ where: {
-           id: productTagsToRemove 
+           id: productTagsUpdate 
           } 
         }),
         ProductTag.bulkCreate(newProductTags),
